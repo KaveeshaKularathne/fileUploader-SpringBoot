@@ -3,6 +3,8 @@ package com.dialog.fileUploader.controller;
 
 import com.dialog.fileUploader.entity.FileInfo;
 import com.dialog.fileUploader.message.ResponseMessage;
+import com.dialog.fileUploader.repository.FileRepository;
+import com.dialog.fileUploader.service.FileService;
 import com.dialog.fileUploader.service.FileUploadservice;
 
 
@@ -23,6 +25,8 @@ public class FileController {
 
     @Autowired
     FileUploadservice fileUploadservice;
+    @Autowired
+    FileService fileService;
 
     @PostMapping("/upload")
     public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
@@ -31,6 +35,8 @@ public class FileController {
             fileUploadservice.save(file);
 
             message = "Uploaded the file successfully: " + file.getOriginalFilename();
+            //fileRepository.save(new FileInfo());
+
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
         } catch (Exception e) {
             message = "Could not upload the file: " + file.getOriginalFilename() + ". Error: " + e.getMessage();
@@ -50,6 +56,21 @@ public class FileController {
 
         return ResponseEntity.status(HttpStatus.OK).body(fileInfos);
     }
+
+    @PostMapping("/fileUpload")
+    public ResponseEntity<String> createFileInfo(@RequestBody FileInfo fileInfo) {
+        System.out.println("working on file upload controller ");
+        try {
+            fileService.save(fileInfo);
+              return new ResponseEntity<>("File record was created successfully.", HttpStatus.CREATED);
+        } catch (Exception e) {
+
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
 
 
